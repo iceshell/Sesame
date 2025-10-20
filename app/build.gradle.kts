@@ -25,6 +25,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Xposed 模块使用 debug 签名即可
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
