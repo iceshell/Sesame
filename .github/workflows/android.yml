@@ -88,6 +88,7 @@ jobs:
         echo ""
         echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
         echo "APK_NAME=$TARGET_NAME" >> $GITHUB_OUTPUT
+        echo "APK_PATH=$(pwd)/$TARGET_NAME" >> $GITHUB_OUTPUT
         
     - name: Upload Release Artifact
       uses: actions/upload-artifact@v4
@@ -97,33 +98,73 @@ jobs:
         retention-days: 90
         compression-level: 9
         if-no-files-found: error
+    
+    - name: Create Tag and Release
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        VERSION_TAG="v${{ steps.sign_apk.outputs.VERSION_NAME }}"
+        BUILD_TAG="${VERSION_TAG}.rc${{ steps.build_number.outputs.BUILD_NUMBER }}"
+        
+        echo "========== 创建 Tag 和 Release =========="
+        echo "Version Tag: $VERSION_TAG"
+        echo "Build Tag: $BUILD_TAG"
+        
+        # 检查tag是否存在，如果存在则删除
+        if git ls-remote --tags origin | grep -q "refs/tags/$BUILD_TAG$"; then
+          echo "Tag $BUILD_TAG 已存在，删除旧标签..."
+          git push origin --delete "$BUILD_TAG" || true
+        fi
+        
+        # 创建并推送新tag
+        git tag "$BUILD_TAG" -m "Release $BUILD_TAG - 芝麻开花节节高"
+        git push origin "$BUILD_TAG"
+        
+        echo "TAG_NAME=$BUILD_TAG" >> $GITHUB_ENV
         
     - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/v')
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ env.TAG_NAME }}
+        name: 芝麻球 ${{ steps.sign_apk.outputs.VERSION_NAME }} RC${{ steps.build_number.outputs.BUILD_NUMBER }}
         files: app/build/outputs/apk/release/Sesame-*.apk
         draft: false
         prerelease: false
         generate_release_notes: true
         body: |
-          ## 芝麻球 ${{ steps.sign_apk.outputs.VERSION_NAME }}
+          ## 🌱 芝麻球 ${{ steps.sign_apk.outputs.VERSION_NAME }}
           
-          ### 芝麻开花节节高 🌱
+          **芝麻开花节节高！**
           
-          **编译次数**: RC${{ steps.build_number.outputs.BUILD_NUMBER }}
+          ### 📦 下载
           
-          **下载文件**: ${{ steps.sign_apk.outputs.APK_NAME }}
+          **文件名**: `${{ steps.sign_apk.outputs.APK_NAME }}`
           
-          #### 更新内容
-          - 自动生成的发布说明
+          **编译版本**: RC${{ steps.build_number.outputs.BUILD_NUMBER }}
           
-          #### 使用说明
+          ### 📝 更新内容
+          
+          ${{ github.event.head_commit.message }}
+          
+          ### 📱 使用说明
+          
           1. 下载并安装 APK
-          2. 在 LSPosed/EdXposed 中激活模块
-          3. 重启支付宝应用
+          2. 在 LSPosed/LSPatch 中激活模块
+          3. 选择作用域：`com.eg.android.AlipayGphone` (支付宝)
+          4. 重启支付宝应用
+          5. 打开芝麻球应用进行配置
+          
+          ### ⚙️ 功能特性
+          
+          - ✅ 桌面启动图标
+          - ✅ UI 配置界面
+          - ✅ 森林和庄园配置
+          - ✅ 日志查看功能
+          - ✅ JSON 配置存储
+          - ✅ 支持 LSPosed 和 LSPatch
           
           ---
+          
           *芝麻开花节节高 - 蚂蚁森林和蚂蚁庄园自动化模块*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
