@@ -41,7 +41,6 @@ class AntForestManager private constructor() {
     /**
      * 初始化
      */
-    @JvmStatic
     fun init() {
         AntForestRpcCall.init()
         Logger.system(TAG, "蚁蜓森林管理器初始化完成")
