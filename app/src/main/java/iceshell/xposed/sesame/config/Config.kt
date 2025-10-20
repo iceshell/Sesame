@@ -90,7 +90,7 @@ object Config {
      */
     fun save() {
         try {
-            CONFIG_FILE.writeText(currentConfig.toString(2))
+            CONFIG_FILE.writeText(currentConfig?.toString(2) ?: "{}")
         } catch (e: Exception) {
             e.printStackTrace()
         }

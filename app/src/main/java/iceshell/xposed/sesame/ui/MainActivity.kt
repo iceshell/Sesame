@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getVersionName(): String {
         return try {
-            packageManager.getPackageInfo(packageName, 0).versionName
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "未知"
         } catch (e: Exception) {
             "未知"
         }
