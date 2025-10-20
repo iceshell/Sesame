@@ -99,13 +99,15 @@ jobs:
         compression-level: 9
         if-no-files-found: error
     
+    - name: Configure Git Identity
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+    
     - name: Create Tag and Release
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        # 配置 git 用户信息
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        
         VERSION_TAG="v${{ steps.sign_apk.outputs.VERSION_NAME }}"
         BUILD_TAG="${VERSION_TAG}.rc${{ steps.build_number.outputs.BUILD_NUMBER }}"
         
