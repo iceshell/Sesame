@@ -49,24 +49,47 @@ jobs:
     - name: Build Release APK
       run: ./gradlew assembleRelease --no-configuration-cache --stacktrace
       
-    - name: Sign Release APK
+    - name: Rename and Sign APK
       id: sign_apk
       run: |
         VERSION_NAME=$(grep "versionName" app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
         BUILD_NUM=${{ steps.build_number.outputs.BUILD_NUMBER }}
         
-        # Rename APKs
-        mv app/build/outputs/apk/debug/Sesame-v*.apk "app/build/outputs/apk/debug/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-debug.apk" 2>/dev/null || true
-        mv app/build/outputs/apk/release/Sesame-v*.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk" 2>/dev/null || true
+        echo "Version: $VERSION_NAME"
+        echo "Build Number: $BUILD_NUM"
         
-        # If rename failed, use default names
-        if [ ! -f "app/build/outputs/apk/debug/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-debug.apk" ]; then
-          mv app/build/outputs/apk/debug/*.apk "app/build/outputs/apk/debug/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-debug.apk"
+        # List APK files for debugging
+        echo "=== Debug APK files ==="
+        ls -lh app/build/outputs/apk/debug/ || echo "Debug directory not found"
+        
+        echo "=== Release APK files ==="
+        ls -lh app/build/outputs/apk/release/ || echo "Release directory not found"
+        
+        # Rename Debug APK (app-debug.apk -> Sesame-v0.1.0.rcN-debug.apk)
+        if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+          mv app/build/outputs/apk/debug/app-debug.apk "app/build/outputs/apk/debug/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-debug.apk"
+          echo "✅ Debug APK renamed successfully"
+        else
+          echo "❌ Debug APK not found"
+          exit 1
         fi
         
-        if [ ! -f "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk" ]; then
-          mv app/build/outputs/apk/release/*.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
+        # Rename Release APK (app-release-unsigned.apk -> Sesame-v0.1.0.rcN-signed.apk)
+        if [ -f "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+          mv app/build/outputs/apk/release/app-release-unsigned.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
+          echo "✅ Release APK renamed successfully"
+        elif [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+          mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
+          echo "✅ Release APK renamed successfully"
+        else
+          echo "❌ Release APK not found"
+          exit 1
         fi
+        
+        # Verify renamed files
+        echo "=== Renamed files ==="
+        ls -lh app/build/outputs/apk/debug/Sesame-*.apk
+        ls -lh app/build/outputs/apk/release/Sesame-*.apk
         
         echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
         echo "APK_NAME=Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk" >> $GITHUB_OUTPUT
