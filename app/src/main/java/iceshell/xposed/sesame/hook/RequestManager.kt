@@ -83,7 +83,7 @@ object RequestManager {
     }
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun getRpcBridge(): RpcBridge? {
+    private fun ensureRpcBridge(): RpcBridge? {
         if (!NetworkUtils.isNetworkAvailable()) {
             Logger.record("网络未连接，等待5秒")
             CoroutineUtils.sleepCompat(5000)
@@ -104,56 +104,56 @@ object RequestManager {
 
     @JvmStatic
     fun requestString(rpcEntity: RpcEntity): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(rpcEntity, 3, 1200)
         return checkResult(result, rpcEntity.requestMethod)
     }
 
     @JvmStatic
     fun requestString(rpcEntity: RpcEntity, tryCount: Int, retryInterval: Int): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(rpcEntity, tryCount, retryInterval)
         return checkResult(result, rpcEntity.requestMethod)
     }
 
     @JvmStatic
     fun requestString(method: String?, data: String?): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(method ?: "", data ?: "")
         return checkResult(result, method)
     }
 
     @JvmStatic
     fun requestString(method: String?, data: String?, relation: String?): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(method ?: "", data ?: "", relation ?: "")
         return checkResult(result, method)
     }
 
     @JvmStatic
     fun requestString(method: String?, data: String?, appName: String?, methodName: String?, facadeName: String?): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(method ?: "", data ?: "", appName ?: "", methodName ?: "", facadeName ?: "")
         return checkResult(result, method)
     }
 
     @JvmStatic
     fun requestString(method: String?, data: String?, tryCount: Int, retryInterval: Int): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(method ?: "", data ?: "", tryCount, retryInterval)
         return checkResult(result, method)
     }
 
     @JvmStatic
     fun requestString(method: String?, data: String?, relation: String?, tryCount: Int, retryInterval: Int): String {
-        val bridge = getRpcBridge() ?: return ""
+        val bridge = ensureRpcBridge() ?: return ""
         val result = bridge.requestString(method ?: "", data ?: "", relation ?: "", tryCount, retryInterval)
         return checkResult(result, method)
     }
 
     @JvmStatic
     fun requestObject(rpcEntity: RpcEntity?, tryCount: Int, retryInterval: Int): RpcEntity? {
-        val bridge = getRpcBridge() ?: return null
+        val bridge = ensureRpcBridge() ?: return null
         return bridge.requestObject(rpcEntity ?: return null, tryCount, retryInterval)
     }
 }
