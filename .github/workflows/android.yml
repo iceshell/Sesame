@@ -14,6 +14,8 @@ jobs:
   build:
     name: Build Sesame APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout Repository
@@ -107,6 +109,8 @@ jobs:
     
     - name: Create Tag and Release
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         VERSION_TAG="v${{ steps.sign_apk.outputs.VERSION_NAME }}"
         BUILD_TAG="${VERSION_TAG}.rc${{ steps.build_number.outputs.BUILD_NUMBER }}"
@@ -114,6 +118,9 @@ jobs:
         echo "========== 创建 Tag 和 Release =========="
         echo "Version Tag: $VERSION_TAG"
         echo "Build Tag: $BUILD_TAG"
+        
+        # 配置git使用GITHUB_TOKEN认证
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
         
         # 检查tag是否存在，如果存在则删除
         if git ls-remote --tags origin | grep -q "refs/tags/$BUILD_TAG$"; then
