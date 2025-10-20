@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 芝麻开花节节高 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/windowBackground">
+    android:background="@color/background">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- 标题栏 -->
+    <include
+        android:id="@+id/base_title"
+        layout="@layout/base_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 标题区域 -->
+    <!-- 状态卡片 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/status_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/base_title">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@color/card_background"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary" />
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/tv_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/unactivated"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 android:textColor="@color/not_active_text" />
 
             <TextView
@@ -47,98 +52,105 @@
                 android:textSize="14sp"
                 android:textColor="@color/textColorSecondary" />
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <!-- 功能按钮区域 -->
-        <LinearLayout
-            android:layout_width="match_parent"
+    <!-- 按钮容器 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_card"
+        app:layout_constraintVertical_bias="1.0">
+
+        <!-- 第一行：森林、庄园、GitHub -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_forest_log"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@color/card_background"
-            android:layout_marginBottom="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/forest_log"
+            app:icon="@drawable/forest"
+            app:iconGravity="top"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:layout_constraintEnd_toStartOf="@id/btn_farm_log"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="功能模块"
-                style="@style/TitleTextStyle" />
-
-            <Button
-                android:id="@+id/btn_forest_settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/forest_configuration"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btn_farm_settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/farm_configuration"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
-
-        <!-- 日志查看区域 -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_farm_log"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@color/card_background"
-            android:layout_marginBottom="16dp">
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/farm_log"
+            app:icon="@drawable/farm"
+            app:iconGravity="top"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:layout_constraintEnd_toStartOf="@id/btn_github"
+            app:layout_constraintStart_toEndOf="@id/btn_forest_log"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="日志查看"
-                style="@style/TitleTextStyle" />
-
-            <Button
-                android:id="@+id/btn_forest_log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/forest_log"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btn_farm_log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/farm_log"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btn_all_log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/all_log"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
-
-        <!-- 其他选项 -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_github"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@color/card_background">
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/visit_github"
+            app:icon="@drawable/github"
+            app:iconGravity="top"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_farm_log"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/btn_github"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/visit_github"
-                android:layout_marginTop="8dp" />
+        <!-- 第二行：所有日志、设置 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_all_log"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/all_log"
+            app:icon="@drawable/all_log"
+            app:iconGravity="top"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:layout_constraintEnd_toStartOf="@id/btn_settings"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_forest_log" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/app_disclaimer"
-                android:textSize="12sp"
-                android:textColor="@color/textColorSecondary" />
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_settings"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/settings"
+            app:icon="@drawable/setting"
+            app:iconGravity="top"
+            app:iconSize="48dp"
+            app:iconTint="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_all_log"
+            app:layout_constraintTop_toBottomOf="@id/btn_farm_log" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -26,11 +26,10 @@ import iceshell.xposed.sesame.util.ModuleHelper
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tvStatus: TextView
-    private lateinit var btnForestSettings: Button
-    private lateinit var btnFarmSettings: Button
     private lateinit var btnForestLog: Button
     private lateinit var btnFarmLog: Button
     private lateinit var btnAllLog: Button
+    private lateinit var btnSettings: Button
     private lateinit var btnGithub: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,25 +43,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         tvStatus = findViewById(R.id.tv_status)
-        btnForestSettings = findViewById(R.id.btn_forest_settings)
-        btnFarmSettings = findViewById(R.id.btn_farm_settings)
         btnForestLog = findViewById(R.id.btn_forest_log)
         btnFarmLog = findViewById(R.id.btn_farm_log)
         btnAllLog = findViewById(R.id.btn_all_log)
+        btnSettings = findViewById(R.id.btn_settings)
         btnGithub = findViewById(R.id.btn_github)
     }
 
     private fun setupListeners() {
-        // 森林配置
-        btnForestSettings.setOnClickListener {
-            openSettings("forest")
-        }
-
-        // 庄园配置
-        btnFarmSettings.setOnClickListener {
-            openSettings("farm")
-        }
-
         // 森林日志
         btnForestLog.setOnClickListener {
             viewLog("forest")
@@ -78,16 +66,38 @@ class MainActivity : AppCompatActivity() {
             viewLog("all")
         }
 
+        // 设置按钮 - 打开设置选择
+        btnSettings.setOnClickListener {
+            showSettingsDialog()
+        }
+
         // 访问GitHub
         btnGithub.setOnClickListener {
             openGithub()
         }
 
-        // 长按标题显示详细信息
+        // 长按状态显示详细信息
         tvStatus.setOnLongClickListener {
             showModuleInfo()
             true
         }
+    }
+    
+    /**
+     * 显示设置选择对话框
+     */
+    private fun showSettingsDialog() {
+        val options = arrayOf("森林配置", "庄园配置")
+        AlertDialog.Builder(this)
+            .setTitle("请选择配置")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> openSettings("forest")
+                    1 -> openSettings("farm")
+                }
+            }
+            .setNegativeButton("取消", null)
+            .show()
     }
 
     /**
