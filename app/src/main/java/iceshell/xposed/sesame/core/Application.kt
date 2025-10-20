@@ -1,7 +1,10 @@
 package iceshell.xposed.sesame.core
 
 import android.app.Application
+import android.util.Log
 import iceshell.xposed.sesame.BuildConfig
+import iceshell.xposed.sesame.config.Config
+import iceshell.xposed.sesame.util.FileHelper
 import iceshell.xposed.sesame.util.Logger
 import iceshell.xposed.sesame.util.NetworkUtils
 import iceshell.xposed.sesame.manager.ConfigManager
@@ -16,8 +19,28 @@ import iceshell.xposed.sesame.feature.antforest.AntForestManager
  */
 class Application : Application() {
     
+    companion object {
+        private const val TAG = "Sesame"
+        
+        @JvmStatic
+        lateinit var instance: Application
+            private set
+    }
+    
     override fun onCreate() {
         super.onCreate()
+        instance = this
+        
+        Log.d(TAG, "Application onCreate: 芝麻开花节节高")
+        
+        // 初始化配置
+        try {
+            Config.init()
+            FileHelper.writeLog("runtime", "应用启动，配置初始化成功")
+        } catch (e: Exception) {
+            Log.e(TAG, "配置初始化失败", e)
+        }
+        
         initializeApp()
     }
     

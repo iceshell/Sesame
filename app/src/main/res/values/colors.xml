@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 芝麻开花节节高 -->
 <resources>
     <!-- 白天模式 -->
     <color name="background">#F4F4F4</color>
     <color name="base_color">#2489FD</color>
-    <color name="colorPrimary">#2489FD</color>
-    <color name="textColorPrimary">#000000</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FF5722</color>
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="windowBackground">#F5F5F5</color>
+    
+    <!-- 状态颜色 -->
+    <color name="active_text">#4CAF50</color>
+    <color name="not_active_text">#F44336</color>
+    
+    <!-- 卡片背景 -->
+    <color name="card_background">#FFFFFF</color>
     
     <color name="selection_color">#2489FD</color>
     
@@ -13,8 +25,6 @@
     
     <color name="orange">#E64000</color>
     
-    <color name="not_active_text">#e10000</color>
-    <color name="active_text">#DCDCDC</color>
     <color name="load_active_text">#999999</color>
     
     <color name="navigationBarColor">#AA000000</color>

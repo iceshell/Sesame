@@ -2,14 +2,24 @@
 <!-- 芝麻开花节节高 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- 存储权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    
+    <!-- 通知权限 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".core.Application"
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault">
+        android:theme="@style/AppTheme">
 
         <!-- Xposed 模块元数据 -->
         <meta-data
@@ -21,6 +31,33 @@
         <meta-data
             android:name="xposedminversion"
             android:value="82" />
+        
+        <!-- LSPosed 支持 -->
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scopes" />
+
+        <!-- 主界面 Activity -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
+            </intent-filter>
+        </activity>
+        
+        <!-- 设置界面 Activity -->
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings"
+            android:theme="@style/AppTheme" />
 
     </application>
 
