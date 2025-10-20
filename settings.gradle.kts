@@ -1,7 +1,7 @@
 // 芝麻开花节节高
 rootProject.name = "Sesame"
 
-include("app")
+include(":app")
 
 pluginManagement {
     repositories {
