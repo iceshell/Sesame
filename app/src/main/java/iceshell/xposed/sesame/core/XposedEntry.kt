@@ -15,10 +15,6 @@ import iceshell.xposed.sesame.util.ModuleHelper
  */
 class XposedEntry : IXposedHookLoadPackage {
 
-    companion object {
-        private const val ALIPAY_PACKAGE = "com.eg.android.AlipayGphone"
-    }
-
     /**
      * 当目标应用加载时被调用
      * 
@@ -26,7 +22,7 @@ class XposedEntry : IXposedHookLoadPackage {
      */
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         // 只 Hook 支付宝应用
-        if (lpparam.packageName != ALIPAY_PACKAGE) {
+        if (lpparam.packageName != Constants.ALIPAY_PACKAGE) {
             return
         }
 

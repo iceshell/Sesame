@@ -1,24 +1,22 @@
 // 芝麻开花节节高
 package iceshell.xposed.sesame.util
 
-import android.os.Environment
+import iceshell.xposed.sesame.core.Constants
 import java.io.File
 
 /**
  * 文件帮助类
  * 
  * 管理日志文件和配置文件
+ * 统一路径：/storage/emulated/0/Android/media/com.eg.android.AlipayGphone/sesame
  */
 object FileHelper {
     
     // 基础目录
-    private val BASE_DIR = File(
-        Environment.getExternalStorageDirectory(),
-        "Android/data/iceshell.xposed.sesame"
-    )
+    private val BASE_DIR = File(Constants.BASE_DIR_PATH)
     
     // 日志目录
-    private val LOG_DIR = File(BASE_DIR, "logs")
+    private val LOG_DIR = File(BASE_DIR, Constants.LOG_DIR_NAME)
     
     init {
         // 确保目录存在

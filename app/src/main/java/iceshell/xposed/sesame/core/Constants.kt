@@ -1,19 +1,24 @@
 package iceshell.xposed.sesame.core
 
 /**
- * 鏍稿績甯搁噺瀹氫箟
+ * 核心常量定义
  */
 object Constants {
     const val TAG = "Sesame"
     
-    // 鐗堟湰淇℃伅
-    const val VERSION_NAME = "3.0.0"
-    const val VERSION_CODE = 3000
+    // 版本信息
+    const val VERSION_NAME = "0.1.0"
+    const val VERSION_CODE = 1
     
-    // 缃戠粶璇锋眰鐩稿叧
+    // 支付宝包名
+    const val ALIPAY_PACKAGE = "com.eg.android.AlipayGphone"
+    
+    // 网络请求相关
     const val DEFAULT_TIMEOUT = 30_000L
     const val MAX_RETRY_COUNT = 3
     
-    // 鏂囦欢璺緞
-    const val CONFIG_DIR_NAME = "sesame-TK"
+    // 统一文件路径：/storage/emulated/0/Android/media/com.eg.android.AlipayGphone/sesame
+    const val BASE_DIR_PATH = "/storage/emulated/0/Android/media/com.eg.android.AlipayGphone/sesame"
+    const val CONFIG_DIR_NAME = "config"
+    const val LOG_DIR_NAME = "logs"
 }

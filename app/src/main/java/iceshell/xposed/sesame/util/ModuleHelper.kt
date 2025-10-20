@@ -1,18 +1,21 @@
 // 芝麻开花节节高
 package iceshell.xposed.sesame.util
 
-import android.content.Context
+import iceshell.xposed.sesame.core.Constants
 import java.io.File
 
 /**
  * 模块帮助类
  * 
- * 检测模块激活状态
+ * 检测模块激活状态，支持LSPosed和LSPatch
  */
 object ModuleHelper {
     
     private var isActive = false
     private const val FLAG_FILE = "module_active.flag"
+    
+    // 标志文件路径
+    private val FLAG_FILE_PATH = File(Constants.BASE_DIR_PATH, FLAG_FILE)
     
     /**
      * 设置模块激活状态
@@ -25,11 +28,11 @@ object ModuleHelper {
         
         // 创建标志文件
         try {
-            val flagFile = File("/sdcard/Android/data/iceshell.xposed.sesame", FLAG_FILE)
-            flagFile.parentFile?.mkdirs()
-            flagFile.writeText(System.currentTimeMillis().toString())
+            FLAG_FILE_PATH.parentFile?.mkdirs()
+            FLAG_FILE_PATH.writeText(System.currentTimeMillis().toString())
+            Logger.system("ModuleHelper", "模块激活标志已创建: ${FLAG_FILE_PATH.absolutePath}")
         } catch (e: Exception) {
-            // 忽略文件创建失败
+            Logger.printStackTrace("ModuleHelper", "创建激活标志失败", e)
         }
     }
     
@@ -45,9 +48,8 @@ object ModuleHelper {
         
         // 方法2: 检查标志文件（应用进程）
         try {
-            val flagFile = File("/sdcard/Android/data/iceshell.xposed.sesame", FLAG_FILE)
-            if (flagFile.exists()) {
-                val timestamp = flagFile.readText().toLongOrNull() ?: 0
+            if (FLAG_FILE_PATH.exists()) {
+                val timestamp = FLAG_FILE_PATH.readText().toLongOrNull() ?: 0
                 // 标志文件在1小时内创建的视为有效
                 if (System.currentTimeMillis() - timestamp < 3600000) {
                     return true

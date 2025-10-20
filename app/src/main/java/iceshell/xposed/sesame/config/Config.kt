@@ -1,7 +1,7 @@
 // 芝麻开花节节高
 package iceshell.xposed.sesame.config
 
-import android.os.Environment
+import iceshell.xposed.sesame.core.Constants
 import org.json.JSONObject
 import java.io.File
 
@@ -10,14 +10,12 @@ import java.io.File
  * 
  * 使用JSON格式存储配置文件
  * 支持森林和庄园的独立配置
+ * 统一路径：/storage/emulated/0/Android/media/com.eg.android.AlipayGphone/sesame/config
  */
 object Config {
     
     // 配置文件目录
-    private val CONFIG_DIR = File(
-        Environment.getExternalStorageDirectory(),
-        "Android/data/iceshell.xposed.sesame/config"
-    )
+    private val CONFIG_DIR = File(Constants.BASE_DIR_PATH, Constants.CONFIG_DIR_NAME)
     
     // 配置文件
     private val CONFIG_FILE = File(CONFIG_DIR, "config.json")
