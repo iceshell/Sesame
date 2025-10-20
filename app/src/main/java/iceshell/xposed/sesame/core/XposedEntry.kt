@@ -39,7 +39,7 @@ class XposedEntry : IXposedHookLoadPackage {
             Logger.system("XposedEntry", "芝麻开花节节高")
             
             // 初始化 Hook 管理器
-            HookManager.init(lpparam)
+            HookManager.getInstance().init(lpparam)
             
             Logger.system("XposedEntry", "Sesame initialization completed")
         } catch (e: Exception) {
