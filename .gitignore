@@ -91,3 +91,12 @@ ehthumbs.db
 *.tmp
 *.swp
 *~
+
+# Documentation (local only)
+docs/
+
+# IDE settings (optional)
+.vscode/
+
+# Build error logs
+build-error.log
