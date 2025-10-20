@@ -43,13 +43,44 @@ jobs:
         echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_OUTPUT
         echo "Build number: $BUILD_NUMBER"
     
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-configuration-cache --stacktrace
-      
     - name: Build Release APK
-      run: ./gradlew assembleRelease --no-configuration-cache --stacktrace
+      run: |
+        echo "开始编译 Release APK..."
+        ./gradlew assembleRelease --no-configuration-cache --stacktrace --info
+        
+        echo ""
+        echo "=== 编译完成，检查输出目录 ==="
+        echo "检查 build 目录结构："
+        find app/build/outputs -type f -name "*.apk" 2>/dev/null || echo "未找到 APK 文件"
+        
+        echo ""
+        echo "完整目录树："
+        tree app/build/outputs/apk/ 2>/dev/null || ls -R app/build/outputs/apk/ 2>/dev/null || echo "目录不存在"
       
-    - name: Rename and Sign APK
+    - name: List All APK Files
+      run: |
+        echo "=== 详细列出所有 APK 相关目录 ==="
+        
+        echo "1. 检查 app/build 目录是否存在："
+        ls -la app/build/ || echo "❌ app/build 目录不存在"
+        
+        echo ""
+        echo "2. 检查 outputs 目录："
+        ls -la app/build/outputs/ || echo "❌ outputs 目录不存在"
+        
+        echo ""
+        echo "3. 检查 apk 目录："
+        ls -la app/build/outputs/apk/ || echo "❌ apk 目录不存在"
+        
+        echo ""
+        echo "4. 检查 release 目录："
+        ls -la app/build/outputs/apk/release/ || echo "❌ release 目录不存在"
+        
+        echo ""
+        echo "5. 查找所有 APK 文件："
+        find app/build -name "*.apk" -type f -exec ls -lh {} \; || echo "❌ 未找到任何 APK 文件"
+      
+    - name: Rename Release APK
       id: sign_apk
       run: |
         VERSION_NAME=$(grep "versionName" app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
@@ -57,66 +88,62 @@ jobs:
         
         echo "Version: $VERSION_NAME"
         echo "Build Number: $BUILD_NUM"
+        echo "Target APK Name: Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
         
-        # List APK files for debugging
-        echo "=== Debug APK files ==="
-        ls -lh app/build/outputs/apk/debug/ || echo "Debug directory not found"
+        echo ""
+        echo "=== 查找并重命名 Release APK ==="
         
-        echo "=== Release APK files ==="
-        ls -lh app/build/outputs/apk/release/ || echo "Release directory not found"
-        
-        # Rename Debug APK (app-debug.apk -> Sesame-v0.1.0.rcN-debug.apk)
-        if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
-          mv app/build/outputs/apk/debug/app-debug.apk "app/build/outputs/apk/debug/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-debug.apk"
-          echo "✅ Debug APK renamed successfully"
-        else
-          echo "❌ Debug APK not found"
-          exit 1
-        fi
-        
-        # Rename Release APK (app-release-unsigned.apk -> Sesame-v0.1.0.rcN-signed.apk)
+        # 尝试多种可能的文件名
         if [ -f "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+          echo "找到: app-release-unsigned.apk"
           mv app/build/outputs/apk/release/app-release-unsigned.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
-          echo "✅ Release APK renamed successfully"
+          echo "✅ Release APK 重命名成功"
         elif [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+          echo "找到: app-release.apk"
           mv app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
-          echo "✅ Release APK renamed successfully"
+          echo "✅ Release APK 重命名成功"
         else
-          echo "❌ Release APK not found"
-          exit 1
+          echo "❌ Release APK 未找到，检查所有文件："
+          ls -la app/build/outputs/apk/release/ || echo "目录为空或不存在"
+          
+          echo ""
+          echo "尝试查找任何 APK 文件："
+          FOUND_APK=$(find app/build/outputs/apk/release/ -name "*.apk" -type f | head -n 1)
+          if [ -n "$FOUND_APK" ]; then
+            echo "找到 APK: $FOUND_APK"
+            mv "$FOUND_APK" "app/build/outputs/apk/release/Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk"
+            echo "✅ Release APK 重命名成功（使用自动查找）"
+          else
+            echo "❌ 编译失败：未生成 APK 文件"
+            exit 1
+          fi
         fi
         
-        # Verify renamed files
-        echo "=== Renamed files ==="
-        ls -lh app/build/outputs/apk/debug/Sesame-*.apk
+        echo ""
+        echo "=== 验证重命名结果 ==="
         ls -lh app/build/outputs/apk/release/Sesame-*.apk
+        
+        # 计算文件大小
+        APK_SIZE=$(ls -lh app/build/outputs/apk/release/Sesame-*.apk | awk '{print $5}')
+        echo "APK 文件大小: $APK_SIZE"
         
         echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
         echo "APK_NAME=Sesame-v${VERSION_NAME}.rc${BUILD_NUM}-signed.apk" >> $GITHUB_OUTPUT
-    
-    - name: Upload Debug Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Sesame-Debug
-        path: app/build/outputs/apk/debug/*.apk
-        retention-days: 30
-        compression-level: 9
         
     - name: Upload Release Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Sesame-Release
-        path: app/build/outputs/apk/release/*.apk
+        path: app/build/outputs/apk/release/Sesame-*.apk
         retention-days: 90
         compression-level: 9
+        if-no-files-found: error
         
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
-        files: |
-          app/build/outputs/apk/debug/*.apk
-          app/build/outputs/apk/release/*.apk
+        files: app/build/outputs/apk/release/Sesame-*.apk
         draft: false
         prerelease: false
         generate_release_notes: true
