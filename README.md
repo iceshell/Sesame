@@ -1,4 +1,6 @@
-# Sesame - 芝麻粒 Xposed 模块
+# 芝麻球 - Sesame Xposed 模块
+
+> 芝麻开花节节高
 
 [![Android CI](https://github.com/iceshell/Sesame/actions/workflows/android.yml/badge.svg)](https://github.com/iceshell/Sesame/actions/workflows/android.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -7,7 +9,9 @@
 
 ## 项目简介
 
-Sesame 是一个基于 Xposed 框架的 Android 模块，用于自动化管理支付宝的蚂蚁森林和蚂蚁庄园功能。
+芝麻球（Sesame）是一个基于 Xposed 框架的 Android 模块，用于自动化管理支付宝的蚂蚁森林和蚂蚁庄园功能。
+
+**芝麻开花节节高** - 让你的蚂蚁森林茁壮成长！
 
 ## 功能特性
 
