@@ -4,15 +4,26 @@ package iceshell.xposed.sesame.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.view.View
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import iceshell.xposed.sesame.BuildConfig
 import iceshell.xposed.sesame.R
 import iceshell.xposed.sesame.config.Config
 import iceshell.xposed.sesame.util.FileHelper
 import iceshell.xposed.sesame.util.ModuleHelper
+import java.io.File
 
 /**
  * 主界面Activity
@@ -25,61 +36,68 @@ import iceshell.xposed.sesame.util.ModuleHelper
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tvStatus: TextView
-    private lateinit var btnForestLog: Button
-    private lateinit var btnFarmLog: Button
-    private lateinit var btnAllLog: Button
-    private lateinit var btnSettings: Button
-    private lateinit var btnGithub: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initViews()
-        setupListeners()
-        updateModuleStatus()
+        // 初始化Compose视图
+        initComposeView()
     }
 
-    private fun initViews() {
-        tvStatus = findViewById(R.id.tv_status)
-        btnForestLog = findViewById(R.id.btn_forest_log)
-        btnFarmLog = findViewById(R.id.btn_farm_log)
-        btnAllLog = findViewById(R.id.btn_all_log)
-        btnSettings = findViewById(R.id.btn_settings)
-        btnGithub = findViewById(R.id.btn_github)
+    private fun initComposeView() {
+        val composeView = findViewById<ComposeView>(R.id.device_info)
+        composeView?.setContent {
+            MaterialTheme {
+                DeviceInfoCard()
+            }
+        }
     }
-
-    private fun setupListeners() {
-        // 森林日志
-        btnForestLog.setOnClickListener {
-            viewLog("forest")
+    
+    @Composable
+    private fun DeviceInfoCard() {
+        val isActive = ModuleHelper.isModuleActive()
+        
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = if (isActive) "✅ 模块已激活" else "❌ 模块未激活",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "版本: ${BuildConfig.VERSION_NAME}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "芝麻开花节节高！",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
-
-        // 庄园日志
-        btnFarmLog.setOnClickListener {
-            viewLog("farm")
-        }
-
-        // 所有日志
-        btnAllLog.setOnClickListener {
-            viewLog("all")
-        }
-
-        // 设置按钮 - 打开设置选择
-        btnSettings.setOnClickListener {
-            showSettingsDialog()
-        }
-
-        // 访问GitHub
-        btnGithub.setOnClickListener {
-            openGithub()
-        }
-
-        // 长按状态显示详细信息
-        tvStatus.setOnLongClickListener {
-            showModuleInfo()
-            true
+    }
+    
+    /**
+     * 处理onClick事件（供XML布局使用）
+     */
+    fun onClick(view: View) {
+        when (view.id) {
+            R.id.btn_forest_log -> viewLog("forest")
+            R.id.btn_farm_log -> viewLog("farm")
+            R.id.btn_view_all_log_file -> viewLog("all")
+            R.id.btn_view_error_log_file -> viewLog("error")
+            R.id.btn_settings -> showSettingsDialog()
+            R.id.btn_github -> openGithub()
+            R.id.one_word -> showModuleInfo()
         }
     }
     
@@ -101,21 +119,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 更新模块激活状态
-     */
-    private fun updateModuleStatus() {
-        val isActive = ModuleHelper.isModuleActive()
-        
-        if (isActive) {
-            tvStatus.text = "✅ 模块已激活"
-            tvStatus.setTextColor(getColor(R.color.active_text))
-        } else {
-            tvStatus.text = "❌ 模块未激活"
-            tvStatus.setTextColor(getColor(R.color.not_active_text))
-        }
-    }
-
-    /**
      * 打开设置界面
      */
     private fun openSettings(type: String) {
@@ -131,19 +134,38 @@ class MainActivity : AppCompatActivity() {
         val logFile = when (type) {
             "forest" -> FileHelper.getForestLogFile()
             "farm" -> FileHelper.getFarmLogFile()
+            "error" -> FileHelper.getRuntimeLogFile()
             else -> FileHelper.getAllLogFile()
         }
 
-        if (logFile.exists()) {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.fromFile(logFile), "text/plain")
+        if (logFile.exists() && logFile.length() > 0) {
             try {
-                startActivity(intent)
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    FileProvider.getUriForFile(
+                        this,
+                        "${packageName}.fileprovider",
+                        logFile
+                    )
+                } else {
+                    Uri.fromFile(logFile)
+                }
+                
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "text/plain")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(Intent.createChooser(intent, "选择查看方式"))
+                } else {
+                    Toast.makeText(this, "未找到可打开日志的应用", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
-                Toast.makeText(this, "未找到可打开日志的应用", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "打开日志失败: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "日志文件不存在", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "日志文件不存在或为空", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -195,10 +217,5 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             "未知"
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateModuleStatus()
     }
 }

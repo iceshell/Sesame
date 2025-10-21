@@ -1,33 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 芝麻开花节节高 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/base_title"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:background="@color/colorPrimary"
-    android:elevation="4dp">
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true">
 
-    <TextView
-        android:id="@+id/tv_base_title"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:text="@string/app_name"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:background="@color/colorPrimary"
+        android:fitsSystemWindows="true">
 
-    <TextView
-        android:id="@+id/tv_base_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_base_title"
-        android:layout_marginStart="16dp"
-        android:text="芝麻开花节节高"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:alpha="0.8" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/x_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/MenuTheme"
+            />
 
-</RelativeLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

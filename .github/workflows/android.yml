@@ -48,7 +48,7 @@ jobs:
     - name: Build Release APK
       run: |
         echo "========== 开始编译 Release APK =========="
-        ./gradlew assembleRelease --no-configuration-cache --stacktrace
+        ./gradlew clean assembleRelease --stacktrace
         
         echo ""
         echo "========== 编译完成 =========="

@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 芝麻开花节节高 -->
 <resources>
-    <!-- Xposed 作用域配置 - 支付宝 -->
     <string-array name="xposed_scopes">
         <item>com.eg.android.AlipayGphone</item>
     </string-array>

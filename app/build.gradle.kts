@@ -2,6 +2,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("plugin.compose")
 }
 
 android {
@@ -47,6 +48,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
     packaging {
@@ -66,6 +68,14 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
+    
+    // Jetpack Compose
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.activity:activity-compose:1.9.3")
+    debugImplementation("androidx.compose.ui:ui-tooling")
     
     // Xposed API
     compileOnly("de.robv.android.xposed:api:82")
